@@ -144,7 +144,7 @@ footer a{color:var(--navy);font-weight:700}
 <main class="wrap" id="app">
   <div class="hero">
     <img src="assets/container.jpg" alt="حاوية مخلفات بناء 20 ياردة من ثراء الرمال" width="900" height="707">
-    <div class="badge"><b class="pNew">400</b><small>ريال / <span class="pDays">10</span> أيام</small><i>+ ضريبة 15%</i></div>
+    <div class="badge"><b class="pNew">400</b><small>ريال / <span class="pDays">10</span> أيام</small></div>
     <div class="info">
       <h2>حاوية مخلفات بناء</h2>
       <p>سعة 20 ياردة · حوالي 15 م³ · شاملة التوصيل والسحب. ترميم أو بناء؟ نوصلها لموقعك ونسحبها وقت ما تمتلي.</p>
@@ -166,7 +166,7 @@ footer a{color:var(--navy);font-weight:700}
       <label for="containerNo">رقم الحاوية اللي عندك (اختياري)</label>
       <input id="containerNo" inputmode="numeric" maxlength="20" placeholder="الرقم المكتوب على الحاوية، مثل 09">
     </div>
-    <p class="hint">كل يوم إضافي بعد اليوم <span class="pDays">10</span>: <b class="pExtra">30</b> ريال + الضريبة.</p>
+    <p class="hint">كل يوم إضافي بعد اليوم <span class="pDays">10</span>: <b class="pExtra">30</b> ريال.</p>
   </section>
 
   <section class="step" id="s2">
@@ -229,13 +229,13 @@ footer a{color:var(--navy);font-weight:700}
 
   <footer>
     للاستفسار: <a href="https://wa.me/966579322030">واتساب 0579322030</a><br>
-    ثراء الرمال · من الخبر إلى القطيف · الأسعار غير شاملة ضريبة القيمة المضافة 15%
+    ثراء الرمال · من الخبر إلى القطيف
   </footer>
 </main>
 
 <div class="bar" id="bar">
   <div class="wrap">
-    <div class="t"><small>الإجمالي شامل الضريبة</small><b id="barTotal">—</b></div>
+    <div class="t"><small>الإجمالي</small><b id="barTotal">—</b></div>
     <button type="button" id="submit">أرسل الطلب</button>
   </div>
 </div>
@@ -258,15 +258,13 @@ const CONFIG = {
   WHATSAPP: "966579322030",
   CITIES: ["الخبر","الظهران","الدمام","سيهات","القطيف","مدينة أخرى"],
   CUSTOMER_TYPES: ["فرد","مقاول أو شركة"],
-  PAYMENTS: ["شبكة","تحويل بنكي"],
-  VAT: 0.15 // كل الأسعار غير شاملة ضريبة القيمة المضافة
+  PAYMENTS: ["شبكة","تحويل بنكي"]
 };
 // الأسعار الافتراضية (تتحدث تلقائياً من ورقة "الأسعار" في جدول قوقل)
-let P = {NEW:400, SWAP:400, PICKUP:0, EXTRA_DAY:30, DAYS:10};
+let P = {NEW:400, SWAP:400, EXTRA_DAY:30, DAYS:10};
 const SERVICES = [
   {id:"NEW",    name:"حاوية جديدة",      desc:() => `نوصلها لموقعك وتبقى عندك ${P.DAYS} أيام، شاملة السحب`},
-  {id:"SWAP",   name:"استبدال حاوية",    desc:() => "نسحب الممتلئة ونحط لك فاضية"},
-  {id:"PICKUP", name:"سحب حاوية",        desc:() => "الحاوية امتلت أو خلصت منها"}
+  {id:"SWAP",   name:"استبدال حاوية",    desc:() => "نسحب الممتلئة ونحط لك فاضية"}
 ];
 
 const $ = id => document.getElementById(id);
@@ -293,15 +291,13 @@ function chips(el, list, key){
 }
 function totals(){
   const sub = round2(svcPrice(state.svc) * state.qty);
-  const vat = round2(sub * CONFIG.VAT);
-  return {sub, vat, total: round2(sub + vat)};
+  return {sub, total: sub};
 }
 function renderSum(){
   const s = SERVICES.find(x => x.id === state.svc), t = totals();
   $("sum").innerHTML = `
-    <div><span>${esc(s.name)} × ${state.qty}</span><span>${t.sub ? fmt(t.sub) + " ريال" : "مشمول"}</span></div>
-    <div><span>الضريبة 15%</span><span>${fmt(t.vat)} ريال</span></div>
-    <div class="tot"><span>الإجمالي شامل الضريبة</span><span>${fmt(t.total)} ريال</span></div>`;
+    <div><span>${esc(s.name)} × ${state.qty}</span><span>${fmt(t.sub)} ريال</span></div>
+    <div class="tot"><span>الإجمالي</span><span>${fmt(t.total)} ريال</span></div>`;
   $("barTotal").textContent = `${fmt(t.total)} ريال`;
   $("qtyOut").textContent = state.qty;
 }
@@ -358,7 +354,7 @@ function validate(o){
   if (!o.city) return ["اختر المدينة.", "s2"];
   if (o.district.length < 2) return ["اكتب الحي.", "s2"];
   if (!o.mapLink && o.address.length < 5) return ["حدد موقعك أو الصق رابط الموقع.", "s2"];
-  if (o.service !== "PICKUP" && !o.agree) return ["أكد إن الحاوية للنفايات الإنشائية فقط.", "s3"];
+  if (!o.agree) return ["أكد إن الحاوية للنفايات الإنشائية فقط.", "s3"];
   if (o.name.length < 2) return ["اكتب اسمك.", "s4"];
   if (!/^05\d{8}$/.test(o.phone)) return ["اكتب رقم جوال صحيح يبدأ بـ 05.", "s4"];
   if (!o.customerType) return ["اختر: فرد أو مقاول/شركة.", "s4"];
@@ -372,9 +368,7 @@ function waText(o, id){
     `طلب جديد من صفحة ثراء الرمال${id ? " رقم " + id : ""}`,
     `الخدمة: ${s.name} (20 ياردة) × ${o.qty}`,
     o.containerNo ? `رقم الحاوية: ${o.containerNo}` : "",
-    t.sub ? `المبلغ قبل الضريبة: ${fmt(t.sub)} ريال` : "المبلغ: مشمول",
-    t.sub ? `الضريبة 15%: ${fmt(t.vat)} ريال` : "",
-    t.sub ? `الإجمالي شامل الضريبة: ${fmt(t.total)} ريال` : "",
+    `المبلغ: ${fmt(t.total)} ريال`,
     `الاسم: ${o.name}`, `الجوال: ${o.phone}`, `العميل: ${o.customerType}`,
     `المدينة والحي: ${o.city} - ${o.district}`,
     o.mapLink ? `الموقع: ${o.mapLink}` : "", o.address ? `الوصف: ${o.address}` : "",
