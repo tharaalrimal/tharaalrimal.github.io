@@ -164,7 +164,7 @@ function handleOrder_(o) {
 
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     ss.getSheetByName(SHEET_ORDERS).appendRow([
-      id, now, SERVICES[o.service], qty, clean_(o.containerNo, 20), clean_(o.name, 60), "'" + o.phone,
+      id, now, SERVICES[o.service], qty, o.containerNo ? "'" + clean_(o.containerNo, 20) : '', clean_(o.name, 60), "'" + o.phone,
       clean_(o.customerType, 20), clean_(o.city, 30), clean_(o.district, 40), clean_(o.mapLink, 300),
       clean_(o.address, 150), date || clean_(o.date, 12), clean_(o.payment, 20),
       sub, vat, total, clean_(o.notes, 300), 'جديد', '', '', '', ''
